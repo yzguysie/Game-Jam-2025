@@ -5,15 +5,7 @@ import random
 import math
 import time
 
-
-
-def main():
-    width, height = 1280, 720
-    fps = 60
-
-    window = pygame.display.set_mode([width, height])
-    pygame.display.set_caption("Placeholder")
-
+class Colors:
     white = (255, 255, 255)
     light_gray = (192, 192, 192)
     gray = (128, 128, 128)
@@ -25,42 +17,55 @@ def main():
     blue = (0, 0, 255)
 
 
-    BACKGROUND_COLOR = (black)
-    clock = pygame.time.Clock()
+class Main:
+    def run(self):
+        self.width = 1280
+        self.height = 720
+        self.fps = 60
 
-    delta_time = 1/fps
+        self.window = pygame.display.set_mode([self.width, self.height])
+        pygame.display.set_caption("Placeholder")
 
-    playing = True
-    while playing:
-        start = time.time()
 
-        handle_events(pygame.event.get())
 
-        game_tick(delta_time)
+        BACKGROUND_COLOR = (Colors.black)
+        self.clock = pygame.time.Clock()
 
-        game_draw(window)
+        self.delta_time = 1/self.fps
 
-        pygame.display.flip()
-        if fps > 0:
-            clock.tick(fps)
-        delta_time = time.time()-start
+        self.playing = True
+        while self.playing:
+            self.start = time.time()
 
-    pygame.quit()
+            self.handle_events(pygame.event.get())
 
-def handle_events(events):
-    for event in events:
-        if event.type == pygame.QUIT:
-            playing = False
-            break
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                playing = False
+            self.game_tick(self.delta_time)
+
+            self.game_draw(self.window)
+
+            pygame.display.flip()
+            if self.fps > 0:
+                self.clock.tick(self.fps)
+            self.delta_time = time.time()-self.start
+
+        pygame.quit()
+
+    def handle_events(self, events):
+        for event in events:
+            if event.type == pygame.QUIT:
+                self.playing = False
                 break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.playing = False
+                    break
 
-def game_draw(surface):
-    surface.fill(0, 0, 0)
+    def game_draw(self, surface):
+        surface.fill((0, 0, 0))
 
-def game_tick(delta_time):
-    pass
+    def game_tick(self, delta_time):
+        pass
 
-main()
+
+main = Main()
+main.run()
