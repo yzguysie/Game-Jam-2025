@@ -4,17 +4,9 @@ pygame.init()
 import random
 import math
 import time
+from graphics import Colors
 
-class Colors:
-    white = (255, 255, 255)
-    light_gray = (192, 192, 192)
-    gray = (128, 128, 128)
-    dark_gray = (64, 64, 64)
-    black = (0, 0, 0)
 
-    red = (255, 0, 0)
-    green = (0, 255, 0)
-    blue = (0, 0, 255)
 
 
 class Main:
