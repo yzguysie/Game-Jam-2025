@@ -1,0 +1,3 @@
+Cameras should have their own windows, so draw functions only need camera, 
+like think about it if you draw to a camera you draw to its window
+use pygame sprite class not own blud

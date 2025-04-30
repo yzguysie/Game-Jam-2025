@@ -6,112 +6,134 @@ import math
 import time
 from graphics import Colors
 from graphics import Camera
-from graphics import Tile
+from actor import Tile
 from actor import Player
 from actor import Actor
+import cProfile
+
+
+def main() -> None:
+    start = time.time()
+    last_time = start
+    width = 1280
+    height = 720
+    og_width = width
+    og_height = height
+    fps_ = 60
+    fps = 60
+    frames = 0
+    font = 'arial'
+    font_width = 10
+    font = pygame.font.SysFont(font, font_width)
+    fullscreen = False
+    window = pygame.display.set_mode([width, height], pygame.RESIZABLE)
+    pygame.display.set_caption("Placeholder")
 
 
 
+    BACKGROUND_COLOR = (Colors.black)
+    clock = pygame.time.Clock()
 
-class Main:
-    def run(self):
-        self.width = 1280
-        self.height = 720
-        self.og_width = self.width
-        self.og_height = self.height
+    delta_time = 1/fps
 
-        self.fps = 60
-        self.fullscreen = False
-        self.window = pygame.display.set_mode([self.width, self.height], pygame.RESIZABLE)
-        pygame.display.set_caption("Placeholder")
+    playing = True
 
-
-
-        BACKGROUND_COLOR = (Colors.black)
-        self.clock = pygame.time.Clock()
-
-        self.delta_time = 1/self.fps
-
-        self.playing = True
-
-        self.player = Player()
-        self.enemy = Actor()
-        self.enemy.x = 0
-        self.enemy.y = 0
-        self.tiles: list[Tile] = []
-        numtiles = 20
-        tilescenterx = 0
-        tilescentery = 0
-        tilesize = 150
-        for i in range(numtiles):
-            x = (i*tilesize)-(tilesize*numtiles/2)
-            for j in range(numtiles):
-                y = (j*tilesize)-(tilesize*numtiles/2)
-                self.tiles.append(Tile(x, y, tilesize, tilesize))
+    player_default_image = pygame.image.load("resources/images/placeholder.png")
+    player = Player(0, 0, 100, 100, image=player_default_image)
+    enemy = Actor(0, 0, 100, 100, image=player_default_image)
+    tiles: list[Tile] = []
+    numtiles = 20
+    tilescenterx = 0
+    tilescentery = 0
+    tilesize = 150
+    for i in range(numtiles):
+        x = (i*tilesize)-(tilesize*numtiles/2)
+        for j in range(numtiles):
+            y = (j*tilesize)-(tilesize*numtiles/2)
+            tiles.append(Tile(x, y, tilesize, tilesize))
 
 
 
-        self.camera = Camera(self.window, 1, -1, -1, actor=self.player)
+    camera = Camera(window, 1, -1, -1, actor=player)
+    while playing:
+        delta_time = time.time()-start
+        start = time.time()
 
-        while self.playing:
-
-            self.start = time.time()
-
-            self.handle_events(pygame.event.get())
-
-            self.game_tick(self.delta_time)
-
-            self.game_draw(self.window, self.camera)
-
-            pygame.display.flip()
-            if self.fps > 0:
-                #self.clock.tick(self.fps)
-                pass
-            self.delta_time = time.time()-self.start
-
-        pygame.quit()
-
-    def handle_events(self, events):
-        for event in events:
+        #handle_events(pygame.event.get())
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.playing = False
+                playing = False
                 break
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.playing = False
+                    playing = False
                     break
 
                 if event.key == pygame.K_F11:
-                    self.fullscreen = not self.fullscreen
-                    self.window.set_fullsreen
-
+                    fullscreen = not fullscreen
+                    if fullscreen:
+                        window = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+                    else:
+                        window = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         keys = pygame.key.get_pressed()
 
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            player.yspeed -= player.max_speed
 
-
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.player.xspeed += self.player.max_speed
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            player.yspeed += player.max_speed
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.player.xspeed -= self.player.max_speed
+            player.xspeed -= player.max_speed
+
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            player.xspeed += player.max_speed
+
+        if keys[pygame.K_g]:
+            camera.scale += .01
         
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.player.yspeed += self.player.max_speed
+        if keys[pygame.K_h]:
+            camera.scale -= .01
+        
 
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.player.yspeed -= self.player.max_speed
+
+        #game_tick(delta_time)
+        player.tick(delta_time)
+
+        #game_draw(window, camera)
+
+        window.fill((0, 0, 0))
+        for tile in tiles:
+            tile.draw(camera)
+        enemy.draw(camera)
+        player.draw(camera)
+
+        text = font.render(f"Fps: {fps_}", True, Colors.green)
+        window.blit(text, (0, 0))
+
+
+        pygame.display.flip()
+        if fps > 0:
+            clock.tick(fps)
+            pass
+        delta_time = time.time()-start
+        if frames % int(fps/2) == 0:
+            fps_ = round(int(fps/2)/(time.time()-last_time))
+            last_time = time.time()
+        frames += 1
+
+    pygame.quit()
+
+def handle_events(self, events) -> None:
+    pass
                 
-    def game_draw(self, surface, camera):
-        surface.fill((0, 0, 0))
-        for tile in self.tiles:
-            tile.draw(surface, camera)
-        self.enemy.draw(surface, camera)
-        self.player.draw(surface, camera)
+def game_draw(self, surface, camera) -> None:
+    pass
 
 
-    def game_tick(self, delta_time):
-        self.player.tick(delta_time)
+def game_tick(self, delta_time) -> None:
+    pass
 
+#cProfile.run('main()', sort='cumtime')
 
-main = Main()
-main.run()
+main()
